@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>♡お誕生日プレゼントルーレット♡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #fff;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin-bottom: 40px;
+        }
+        
+        .arrow {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #ff6b9d;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+            z-index: 10;
+        }
+        
+        .roulette {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 8px solid #fff;
+        }
+        
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            transition: transform 0.1s linear;
+        }
+        
+        .segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+        }
+        
+        .segment span {
+            position: absolute;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            transform: rotate(-22.5deg) translateX(60px);
+            white-space: nowrap;
+        }
+        
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 5;
+        }
+        
+        button {
+            padding: 20px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255,107,157,0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255,107,157,0.5);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            min-height: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes celebration {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .celebrate {
+            animation: celebration 0.5s ease-in-out 3;
+        }
+    </style>
+</head>
+<body>
+    <h1>♡お誕生日プレゼントルーレット♡</h1>
+    
+    <div class="container">
+        <div class="arrow"></div>
+        <div class="roulette">
+            <div class="wheel" id="wheel"></div>
+            <div class="center-circle"></div>
+        </div>
+    </div>
+    
+    <button id="spinBtn">スタート</button>
+    <div class="result" id="result"></div>
+    
+    <script>
+        const items = ['木綿', '絹ごし', 'おぼろ', '厚揚げ', '薄揚げ', 'がんも', '幸男のハグ', '歌唱'];
+        const colors = ['#ff6b9d', '#c44569', '#f8b500', '#4ecdc4', '#45b7d1', '#96ceb4', '#a29bfe', '#fd79a8'];
+        
+        const wheel = document.getElementById('wheel');
+        const btn = document.getElementById('spinBtn');
+        const result = document.getElementById('result');
+        
+        let isSpinning = false;
+        let currentRotation = 0;
+        let spinInterval;
+        let spinSpeed = 0;
+        
+        // セグメント作成
+        items.forEach((item, i) => {
+            const segment = document.createElement('div');
+            segment.className = 'segment';
+            segment.style.background = colors[i];
+            segment.style.transform = `rotate(${i * 45}deg)`;
+            
+            const span = document.createElement('span');
+            span.textContent = item;
+            segment.appendChild(span);
+            
+            wheel.appendChild(segment);
+        });
+        
+        function startSpin() {
+            spinSpeed = 30;
+            spinInterval = setInterval(() => {
+                currentRotation += spinSpeed;
+                wheel.style.transform = `rotate(${currentRotation}deg)`;
+            }, 16);
+        }
+        
+        function stopSpin() {
+            const deceleration = setInterval(() => {
+                spinSpeed *= 0.95;
+                if (spinSpeed < 0.5) {
+                    clearInterval(deceleration);
+                    clearInterval(spinInterval);
+                    spinSpeed = 0;
+                    
+                    // 最終的な角度を計算
+                    const normalizedRotation = currentRotation % 360;
+                    const segmentAngle = 360 / items.length;
+                    const selectedIndex = Math.floor((360 - normalizedRotation + segmentAngle / 2) / segmentAngle) % items.length;
+                    
+                    result.textContent = `🎉 ${items[selectedIndex]} 🎉`;
+                    result.classList.add('celebrate');
+                    setTimeout(() => result.classList.remove('celebrate'), 1500);
+                    
+                    isSpinning = false;
+                    btn.textContent = 'スタート';
+                }
+            }, 16);
+        }
+        
+        btn.addEventListener('click', () => {
+            if (!isSpinning) {
+                isSpinning = true;
+                btn.textContent = 'ストップ';
+                result.textContent = '';
+                startSpin();
+            } else {
+                btn.textContent = '停止中...';
+                btn.disabled = true;
+                stopSpin();
+                setTimeout(() => {
+                    btn.disabled = false;
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
